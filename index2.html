@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ClassLink Slider</title>
+  <base target="_top">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background: transparent;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .slider-wrap {
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      position: relative;
+    }
+
+    .slider {
+      position: relative;
+      width: 100%;
+      height: 280px;
+      overflow: hidden;
+      border-radius: 24px;
+      background: #e9ebf1;
+      box-shadow: 0 8px 24px rgba(0, 20, 60, 0.22);
+    }
+
+    .slide {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.8s ease;
+      z-index: 1;
+    }
+
+    .slide.active {
+      opacity: 1;
+      visibility: visible;
+      z-index: 2;
+    }
+
+    .slide a {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    .slide img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border: 0;
+    }
+
+    .nav-arrow {
+      position: absolute;
+      bottom: 12px;
+      width: 42px;
+      height: 42px;
+      border: 0;
+      border-radius: 50%;
+      background: rgba(8, 45, 108, 0.88);
+      color: #ffffff;
+      font-size: 26px;
+      line-height: 42px;
+      text-align: center;
+      cursor: pointer;
+      z-index: 5;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
+    }
+
+    .nav-arrow:hover {
+      background: rgba(11, 95, 255, 0.95);
+    }
+
+    .prev {
+      left: calc(50% - 92px);
+    }
+
+    .next {
+      right: calc(50% - 92px);
+    }
+
+    .dots {
+      position: absolute;
+      left: 50%;
+      bottom: 22px;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 12px;
+      z-index: 5;
+    }
+
+    .dot {
+      width: 16px;
+      height: 16px;
+      border: 0;
+      border-radius: 50%;
+      background: rgba(8, 45, 108, 0.35);
+      cursor: pointer;
+      padding: 0;
+    }
+
+    .dot.active {
+      background: #0b5fff;
+      box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.9);
+    }
+
+    .dot:hover {
+      background: #0b5fff;
+    }
+
+    @media (max-width: 900px) {
+      .slider {
+        height: 240px;
+      }
+    }
+
+    @media (max-width: 680px) {
+      .slider {
+        height: 200px;
+        border-radius: 18px;
+      }
+
+      .nav-arrow {
+        width: 38px;
+        height: 38px;
+        font-size: 22px;
+        line-height: 38px;
+        bottom: 10px;
+      }
+
+      .prev {
+        left: calc(50% - 82px);
+      }
+
+      .next {
+        right: calc(50% - 82px);
+      }
+
+      .dots {
+        bottom: 20px;
+        gap: 10px;
+      }
+
+      .dot {
+        width: 14px;
+        height: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="slider-wrap">
+    <div class="slider" id="classlinkSlider">
+      <div class="slide active">
+        <a href="https://help.classlink.com/s/launchpad-admin-cmc-home">
+          <img src="cmc_slider.png" alt="CMC">
+        </a>
+      </div>
+
+      <div class="slide">
+        <a href="https://help.classlink.com/s/article/FAQ-for-Home-Users">
+          <img src="launchpad_slider.png" alt="LaunchPad">
+        </a>
+      </div>
+
+      <div class="slide">
+        <a href="https://www.classlink.com/products/onesync">
+          <img src="onesync_slider.png" alt="OneSync">
+        </a>
+      </div>
+
+      <div class="slide">
+        <a href="https://www.classlink.com/products/roster-server">
+          <img src="rosterserver_slider.png" alt="Roster Server">
+        </a>
+      </div>
+
+      <button class="nav-arrow prev" aria-label="Previous slide" type="button">&#10094;</button>
+      <div class="dots" aria-label="Slider navigation">
+        <button class="dot active" aria-label="Go to slide 1" type="button"></button>
+        <button class="dot" aria-label="Go to slide 2" type="button"></button>
+        <button class="dot" aria-label="Go to slide 3" type="button"></button>
+        <button class="dot" aria-label="Go to slide 4" type="button"></button>
+      </div>
+      <button class="nav-arrow next" aria-label="Next slide" type="button">&#10095;</button>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const slider = document.getElementById('classlinkSlider');
+      const slides = slider.querySelectorAll('.slide');
+      const dots = slider.querySelectorAll('.dot');
+      const prev = slider.querySelector('.prev');
+      const next = slider.querySelector('.next');
+      let current = 0;
+      let timer;
+
+      function showSlide(index) {
+        slides[current].classList.remove('active');
+        dots[current].classList.remove('active');
+
+        current = (index + slides.length) % slides.length;
+
+        slides[current].classList.add('active');
+        dots[current].classList.add('active');
+      }
+
+      function nextSlide() {
+        showSlide(current + 1);
+      }
+
+      function prevSlide() {
+        showSlide(current - 1);
+      }
+
+      function startAuto() {
+        stopAuto();
+        timer = setInterval(nextSlide, 3000);
+      }
+
+      function stopAuto() {
+        if (timer) {
+          clearInterval(timer);
+        }
+      }
+
+      next.addEventListener('click', function () {
+        nextSlide();
+        startAuto();
+      });
+
+      prev.addEventListener('click', function () {
+        prevSlide();
+        startAuto();
+      });
+
+      dots.forEach(function (dot, index) {
+        dot.addEventListener('click', function () {
+          showSlide(index);
+          startAuto();
+        });
+      });
+
+      slider.addEventListener('mouseenter', stopAuto);
+      slider.addEventListener('mouseleave', startAuto);
+
+      startAuto();
+    })();
+  </script>
+</body>
+</html>
